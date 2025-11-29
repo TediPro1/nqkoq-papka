@@ -8,7 +8,7 @@ using SmartAccessLift.Web.Services;
 
 namespace SmartAccessLift.Web.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class VisitorAccessController : Controller
 {
     private readonly IVisitorAccessService _visitorAccessService;
@@ -20,21 +20,33 @@ public class VisitorAccessController : Controller
         _context = context;
     }
 
+    // In VisitorAccessController.cs, update the Index action
     public async Task<IActionResult> Index()
     {
         var currentUserId = SessionHelper.GetUserId(HttpContext.Session) ?? 0;
+        if (currentUserId == 0)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
-        var userPermissions = await _context.FloorPermissions
+        // Get the floors that the current user has permission to grant access to
+        // Only include floors that are active and the user has permission for
+        var floorPermissions = await _context.FloorPermissions
             .Where(fp => fp.UserId == currentUserId && fp.IsAllowed)
             .Include(fp => fp.Floor)
+            .ToListAsync();
+
+        var userPermissions = floorPermissions
+            .Where(fp => fp.Floor != null && fp.Floor.IsActive)
             .Select(fp => new FloorOptionViewModel
             {
                 FloorId = fp.FloorId,
                 FloorNumber = fp.Floor.FloorNumber,
                 FloorName = fp.Floor.Name,
-                IsAllowed = true
+                IsAllowed = fp.IsAllowed
             })
-            .ToListAsync();
+            .OrderBy(f => f.FloorNumber)
+            .ToList();
 
         var viewModel = new VisitorAccessViewModel
         {

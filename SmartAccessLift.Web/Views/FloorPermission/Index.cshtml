@@ -5,6 +5,42 @@
 
 <div class="main-container">
     <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Manage Floor Permissions</h1>
+    
+    @if (Model.IsAdmin && Model.AllUsers != null && Model.AllUsers.Any())
+    {
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="form-group">
+                <label for="userSelector" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select User</label>
+                <select id="userSelector" class="form-control" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem;">
+                    @foreach (var user in Model.AllUsers)
+                    {
+                        @if (user.UserId == Model.TargetUserId)
+                        {
+                            <option value="@user.UserId" data-role="@user.Role" selected>
+                                @user.FullName (@user.Email) - @user.Role
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@user.UserId" data-role="@user.Role">
+                                @user.FullName (@user.Email) - @user.Role
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            @if (Model.TargetUserId.HasValue)
+            {
+                <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    Managing permissions for: <strong>@Model.SelectedUserName</strong>
+                </div>
+            }
+        </div>
+    }
+    
+    <form id="floorPermissionForm" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="targetUserId" name="TargetUserId" value="@Model.TargetUserId" />
 
     <div class="card">
         <ul class="floor-list">
@@ -28,6 +64,7 @@
             }
         </ul>
     </div>
+    </form>
 </div>
 
 <!-- Floating Bottom Bar -->

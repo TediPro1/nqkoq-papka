@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeToggles();
     setupSaveButton();
+    setupUserSelector();
 });
 
 function initializeToggles() {
@@ -34,12 +35,26 @@ function setupSaveButton() {
     }
 }
 
+function setupUserSelector() {
+    const userSelector = document.getElementById('userSelector');
+    if (userSelector) {
+        userSelector.addEventListener('change', function() {
+            const selectedUserId = this.value;
+            // Reload the page with the selected user ID
+            window.location.href = `/FloorPermission/Index?userId=${selectedUserId}`;
+        });
+    }
+}
+
 async function savePermissions() {
     const toggles = document.querySelectorAll('.toggle-switch input[type="checkbox"]');
     const permissions = Array.from(toggles).map(toggle => ({
         floorId: parseInt(toggle.dataset.floorId),
         isAllowed: toggle.checked
     }));
+
+    const targetUserId = document.getElementById('targetUserId')?.value || 
+                         document.querySelector('input[name="TargetUserId"]')?.value || null;
 
     try {
         const response = await fetch('/FloorPermission/Update', {
@@ -48,19 +63,21 @@ async function savePermissions() {
                 'Content-Type': 'application/json',
                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
             },
-            body: JSON.stringify({ permissions: permissions })
+            body: JSON.stringify({
+                userId: targetUserId ? parseInt(targetUserId) : null,
+                permissions: permissions
+            })
         });
 
         const result = await response.json();
-
+        
         if (result.success) {
-            showToast('Permissions saved successfully!', 'success');
+            showToast('Permissions updated successfully!', 'success');
         } else {
-            showToast(result.errors?.[0] || 'Failed to save permissions', 'error');
+            showToast(result.errors ? result.errors.join('\n') : 'Failed to update permissions', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showToast('An error occurred. Please try again.', 'error');
+        showToast('An error occurred while saving permissions', 'error');
     }
 }
-

@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartAccessLift.Web.Attributes;
+using SmartAccessLift.Web.Helpers;
 using SmartAccessLift.Web.Models.ViewModels;
 using SmartAccessLift.Web.Services;
 
 namespace SmartAccessLift.Web.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class AccessLogController : Controller
 {
     private readonly IAccessLogService _accessLogService;
@@ -26,9 +29,8 @@ public class AccessLogController : Controller
     [HttpGet]
     public async Task<IActionResult> Data(int? floorId, string? accessMethod, string? outcome, DateTime? startDate, DateTime? endDate, int? userId, int page = 1, int pageSize = 50)
     {
-        // TODO: Get current user ID from authentication and check permissions
-        int currentUserId = 1; // Placeholder
-        bool isAdmin = false; // TODO: Check if admin
+        var currentUserId = SessionHelper.GetUserId(HttpContext.Session) ?? 0;
+        var isAdmin = SessionHelper.IsAdmin(HttpContext.Session);
 
         // If not admin, restrict to user's accessible floors
         if (!isAdmin)

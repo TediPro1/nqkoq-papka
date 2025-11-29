@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartAccessLift.Web.Attributes;
 using SmartAccessLift.Web.Models.ViewModels;
 using SmartAccessLift.Web.Services;
 
 namespace SmartAccessLift.Web.Controllers;
 
+[Authorize]
 public class LiveViewController : Controller
 {
     private readonly ICameraService _cameraService;

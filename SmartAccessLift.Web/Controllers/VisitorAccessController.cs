@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SmartAccessLift.Web.Attributes;
 using SmartAccessLift.Web.Data;
+using SmartAccessLift.Web.Helpers;
 using SmartAccessLift.Web.Models.ViewModels;
 using SmartAccessLift.Web.Services;
 
 namespace SmartAccessLift.Web.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class VisitorAccessController : Controller
 {
     private readonly IVisitorAccessService _visitorAccessService;
@@ -19,8 +22,7 @@ public class VisitorAccessController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // TODO: Get current user ID from authentication
-        int currentUserId = 1; // Placeholder
+        var currentUserId = SessionHelper.GetUserId(HttpContext.Session) ?? 0;
 
         var userPermissions = await _context.FloorPermissions
             .Where(fp => fp.UserId == currentUserId && fp.IsAllowed)
@@ -53,8 +55,11 @@ public class VisitorAccessController : Controller
 
         try
         {
-            // TODO: Get current user ID from authentication
-            int currentUserId = 1; // Placeholder
+            var currentUserId = SessionHelper.GetUserId(HttpContext.Session) ?? 0;
+            if (currentUserId == 0)
+            {
+                return BadRequest(new { success = false, error = "User not authenticated" });
+            }
 
             var visitorAccess = await _visitorAccessService.CreateVisitorAccessAsync(request, currentUserId);
 
@@ -100,8 +105,7 @@ public class VisitorAccessController : Controller
     [HttpGet]
     public async Task<IActionResult> List(string? status = null, int page = 1, int pageSize = 10)
     {
-        // TODO: Get current user ID from authentication
-        int currentUserId = 1; // Placeholder
+        var currentUserId = SessionHelper.GetUserId(HttpContext.Session) ?? 0;
 
         var visitorAccesses = await _visitorAccessService.GetUserVisitorAccessesAsync(currentUserId, status);
 

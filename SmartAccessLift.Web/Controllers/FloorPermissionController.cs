@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartAccessLift.Web.Attributes;
+using SmartAccessLift.Web.Helpers;
 using SmartAccessLift.Web.Models.ViewModels;
 using SmartAccessLift.Web.Services;
 
 namespace SmartAccessLift.Web.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class FloorPermissionController : Controller
 {
     private readonly IFloorPermissionService _floorPermissionService;
@@ -15,15 +18,15 @@ public class FloorPermissionController : Controller
 
     public async Task<IActionResult> Index(int? userId = null)
     {
-        // TODO: Get current user ID from authentication
-        int currentUserId = userId ?? 1; // Placeholder
+        var currentUserId = userId ?? SessionHelper.GetUserId(HttpContext.Session) ?? 0;
+        var isAdmin = SessionHelper.IsAdmin(HttpContext.Session);
 
         var floors = await _floorPermissionService.GetUserFloorPermissionsAsync(currentUserId);
 
         var viewModel = new FloorPermissionViewModel
         {
             Floors = floors,
-            IsAdmin = false, // TODO: Check if user is admin
+            IsAdmin = isAdmin,
             TargetUserId = userId
         };
 
@@ -41,9 +44,9 @@ public class FloorPermissionController : Controller
 
         try
         {
-            // TODO: Get current user ID from authentication
-            int currentUserId = request.UserId ?? 1; // Placeholder
-            int? grantedBy = null; // TODO: Set if admin is granting
+            var currentUserId = request.UserId ?? SessionHelper.GetUserId(HttpContext.Session) ?? 0;
+            var isAdmin = SessionHelper.IsAdmin(HttpContext.Session);
+            int? grantedBy = isAdmin ? SessionHelper.GetUserId(HttpContext.Session) : null;
 
             var servicePermissions = request.Permissions.Select(p => new Services.FloorPermissionUpdate
             {

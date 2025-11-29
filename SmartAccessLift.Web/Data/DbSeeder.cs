@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SmartAccessLift.Web.Models.Entities;
 
@@ -30,11 +32,11 @@ public static class DbSeeder
         // Seed Admin user if none exists
         if (!await context.Users.AnyAsync(u => u.Role == "Admin"))
         {
-            // Note: In production, use proper password hashing (ASP.NET Core Identity)
+            var adminPasswordHash = HashPassword("Admin123!"); // Default admin password
             var adminUser = new User
             {
                 Email = "admin@smartaccess.com",
-                PasswordHash = "PLACEHOLDER_HASH", // Will be replaced with proper Identity hashing
+                PasswordHash = adminPasswordHash,
                 FirstName = "Admin",
                 LastName = "User",
                 Role = "Admin",
@@ -46,6 +48,15 @@ public static class DbSeeder
         }
 
         await context.SaveChangesAsync();
+    }
+
+    private static string HashPassword(string password)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
+        }
     }
 }
 

@@ -22,26 +22,35 @@
         <div class="dashboard-widget">
             <h2 class="widget-title">Quick Actions</h2>
             <div class="quick-actions">
-                <a asp-controller="VisitorAccess" asp-action="Index" class="quick-action-btn">
-                    <i data-lucide="user-plus" class="icon"></i>
-                    <span>Grant Visitor Access</span>
-                </a>
-                <a asp-controller="AccessLog" asp-action="Index" class="quick-action-btn">
-                    <i data-lucide="file-text" class="icon"></i>
-                    <span>See Access Logs</span>
-                </a>
-                <a asp-controller="FloorPermission" asp-action="Index" class="quick-action-btn">
-                    <i data-lucide="settings" class="icon"></i>
-                    <span>Manage My Floors</span>
+                @if (SmartAccessLift.Web.Helpers.SessionHelper.IsAdmin(Context.Session))
+                {
+                    <a asp-controller="VisitorAccess" asp-action="Index" class="quick-action-btn">
+                        <i data-lucide="user-plus" class="icon"></i>
+                        <span>Grant Visitor Access</span>
+                    </a>
+                    <a asp-controller="AccessLog" asp-action="Index" class="quick-action-btn">
+                        <i data-lucide="file-text" class="icon"></i>
+                        <span>See Access Logs</span>
+                    </a>
+                    <a asp-controller="FloorPermission" asp-action="Index" class="quick-action-btn">
+                        <i data-lucide="settings" class="icon"></i>
+                        <span>Manage My Floors</span>
+                    </a>
+                }
+                <a asp-controller="LiveView" asp-action="Index" class="quick-action-btn">
+                    <i data-lucide="video" class="icon"></i>
+                    <span>Live Camera View</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Upcoming Visitors Widget -->
-    <div class="dashboard-widget">
-        <h2 class="widget-title">Upcoming Visitors</h2>
-        @if (Model.UpcomingVisitors.Any())
+    <!-- Upcoming Visitors Widget (Admin Only) -->
+    @if (SmartAccessLift.Web.Helpers.SessionHelper.IsAdmin(Context.Session))
+    {
+        <div class="dashboard-widget">
+            <h2 class="widget-title">Upcoming Visitors</h2>
+            @if (Model.UpcomingVisitors.Any())
         {
             <ul class="visitors-list">
                 @foreach (var visitor in Model.UpcomingVisitors)
@@ -58,11 +67,12 @@
                 }
             </ul>
         }
-        else
-        {
-            <p style="color: var(--text-light); text-align: center; padding: 2rem;">No upcoming visitors</p>
-        }
-    </div>
+            else
+            {
+                <p style="color: var(--text-light); text-align: center; padding: 2rem;">No upcoming visitors</p>
+            }
+        </div>
+    }
 </div>
 
 <script src="~/js/dashboard.js" asp-append-version="true"></script>

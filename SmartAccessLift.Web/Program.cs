@@ -7,6 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Add session support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Configure Entity Framework
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -36,6 +45,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Use session
+app.UseSession();
+
 // Authentication and Authorization (will be configured with Identity in later phases)
 // app.UseAuthentication();
 app.UseAuthorization();
@@ -45,7 +57,7 @@ app.MapHub<ElevatorHub>("/hubs/elevator");
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 // Seed database
 using (var scope = app.Services.CreateScope())

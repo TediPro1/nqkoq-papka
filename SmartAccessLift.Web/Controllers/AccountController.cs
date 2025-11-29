@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SmartAccessLift.Web.Helpers;
 using SmartAccessLift.Web.Models.ViewModels;
 using SmartAccessLift.Web.Services;
 
@@ -15,6 +16,12 @@ public class AccountController : Controller
 
     public IActionResult Login(string? returnUrl = null)
     {
+        // If already logged in, redirect to dashboard
+        if (SessionHelper.IsAuthenticated(HttpContext.Session))
+        {
+            return RedirectToAction("Index", "Dashboard");
+        }
+
         ViewData["ReturnUrl"] = returnUrl;
         return View(new LoginViewModel { ReturnUrl = returnUrl });
     }
@@ -28,9 +35,12 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var result = await _authService.AuthenticateAsync(model.Email, model.Password);
-        if (result)
+        var user = await _authService.AuthenticateAsync(model.Email, model.Password);
+        if (user != null)
         {
+            // Set user in session
+            SessionHelper.SetUser(HttpContext.Session, user);
+
             var redirectUrl = returnUrl ?? Url.Action("Index", "Dashboard");
             return Redirect(redirectUrl ?? "/Dashboard");
         }
@@ -41,6 +51,12 @@ public class AccountController : Controller
 
     public IActionResult Register()
     {
+        // If already logged in, redirect to dashboard
+        if (SessionHelper.IsAuthenticated(HttpContext.Session))
+        {
+            return RedirectToAction("Index", "Dashboard");
+        }
+
         return View(new RegisterViewModel());
     }
 
@@ -53,11 +69,11 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var result = await _authService.RegisterAsync(model);
-        if (result)
+        var user = await _authService.RegisterAsync(model);
+        if (user != null)
         {
             // Auto-login after registration
-            await _authService.AuthenticateAsync(model.Email, model.Password);
+            SessionHelper.SetUser(HttpContext.Session, user);
             return RedirectToAction("Index", "Dashboard");
         }
 
@@ -65,10 +81,11 @@ public class AccountController : Controller
         return View(model);
     }
 
+    [HttpGet]
     [HttpPost]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        await _authService.SignOutAsync();
+        SessionHelper.ClearUser(HttpContext.Session);
         return RedirectToAction("Login", "Account");
     }
 }

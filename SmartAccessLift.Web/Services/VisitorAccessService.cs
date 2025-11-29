@@ -30,20 +30,40 @@ public class VisitorAccessService : IVisitorAccessService
             throw new InvalidOperationException($"You do not have permission to grant access to floors: {string.Join(", ", invalidFloors)}");
         }
 
+        // Validate user exists
+        var userExists = await _context.Users.AnyAsync(u => u.Id == createdByUserId && u.IsActive);
+        if (!userExists)
+        {
+            throw new InvalidOperationException("User not found or inactive");
+        }
+
         // Generate QR code
         var qrToken = _qrCodeService.GenerateQRCodeToken();
         var qrCodeData = $"smartaccess://visitor/{qrToken}";
         var qrCodeImage = _qrCodeService.GenerateQRCodeImage(qrCodeData);
+
+        // Create the full data URL
+        var qrCodeImageUrl = $"data:image/png;base64,{qrCodeImage}";
+        
+        // Note: QRCodeImageUrl field has MaxLength(1000), but base64 images can be longer
+        // For now, we'll store a truncated version in the DB but return the full URL in the response
+        // In production, consider storing images as files or increasing the field size
+
+        // Store truncated version in DB if too long (for database constraint)
+        // But we'll return the full image in the response
+        var dbImageUrl = qrCodeImageUrl.Length > 1000 
+            ? qrCodeImageUrl.Substring(0, 1000) 
+            : qrCodeImageUrl;
 
         var visitorAccess = new VisitorAccess
         {
             CreatedByUserId = createdByUserId,
             VisitorName = request.VisitorName,
             QRCode = qrToken,
-            QRCodeImageUrl = $"data:image/png;base64,{qrCodeImage}",
-            StartTime = request.StartTime,
-            EndTime = request.EndTime,
-            Status = DateTime.UtcNow >= request.StartTime ? "Active" : "Pending",
+            QRCodeImageUrl = dbImageUrl, // Store truncated version in DB
+            StartTime = request.StartTime.ToUniversalTime(),
+            EndTime = request.EndTime.ToUniversalTime(),
+            Status = DateTime.UtcNow >= request.StartTime.ToUniversalTime() ? "Active" : "Pending",
             CreatedAt = DateTime.UtcNow,
             UseCount = 0
         };
@@ -52,16 +72,30 @@ public class VisitorAccessService : IVisitorAccessService
         await _context.SaveChangesAsync();
 
         // Add floor associations
-        foreach (var floorId in request.FloorIds)
+        if (request.FloorIds != null && request.FloorIds.Any())
         {
-            _context.VisitorAccessFloors.Add(new VisitorAccessFloor
+            foreach (var floorId in request.FloorIds)
             {
-                VisitorAccessId = visitorAccess.Id,
-                FloorId = floorId
-            });
+                // Verify floor exists
+                var floorExists = await _context.Floors.AnyAsync(f => f.Id == floorId && f.IsActive);
+                if (!floorExists)
+                {
+                    throw new InvalidOperationException($"Floor with ID {floorId} does not exist or is not active");
+                }
+
+                _context.VisitorAccessFloors.Add(new VisitorAccessFloor
+                {
+                    VisitorAccessId = visitorAccess.Id,
+                    FloorId = floorId
+                });
+            }
+
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
+        // Update the QRCodeImageUrl with the full image (for response)
+        // The DB only stores a truncated version due to field size limit
+        visitorAccess.QRCodeImageUrl = qrCodeImageUrl;
 
         return visitorAccess;
     }

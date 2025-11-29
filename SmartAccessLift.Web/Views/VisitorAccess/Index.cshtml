@@ -8,6 +8,7 @@
 
     <div class="card">
         <form id="visitorAccessForm">
+            @Html.AntiForgeryToken()
             <div class="form-group">
                 <label for="VisitorName" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Visitor Name</label>
                 <input type="text" id="VisitorName" name="VisitorName" class="form-control" required placeholder="Enter visitor's name" />

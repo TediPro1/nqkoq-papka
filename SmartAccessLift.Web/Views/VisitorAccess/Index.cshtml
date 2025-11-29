@@ -1,0 +1,64 @@
+@model SmartAccessLift.Web.Models.ViewModels.VisitorAccessViewModel
+@{
+    ViewData["Title"] = "Grant Visitor Access";
+}
+
+<div class="main-container">
+    <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Grant Visitor Access</h1>
+
+    <div class="card">
+        <form id="visitorAccessForm">
+            <div class="form-group">
+                <label for="VisitorName" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Visitor Name</label>
+                <input type="text" id="VisitorName" name="VisitorName" class="form-control" required placeholder="Enter visitor's name" />
+            </div>
+
+            <div class="form-group">
+                <label for="StartTime" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Start Time</label>
+                <input type="datetime-local" id="StartTime" name="StartTime" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label for="EndTime" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">End Time</label>
+                <input type="datetime-local" id="EndTime" name="EndTime" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select Floors</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    @foreach (var floor in Model.AvailableFloors)
+                    {
+                        <label style="display: flex; align-items: center; padding: 0.5rem 1rem; background: var(--bg-light); border-radius: 50px; cursor: pointer; border: 2px solid transparent;">
+                            <input type="checkbox" name="FloorIds" value="@floor.FloorId" style="margin-right: 0.5rem;" />
+                            <span>Floor @floor.FloorNumber @(floor.FloorName != null ? $"({floor.FloorName})" : "")</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                <i data-lucide="qrcode" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
+                Generate Temporary QR Code
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- QR Code Modal -->
+<div id="qrCodeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>QR Code Generated</h2>
+            <button class="modal-close" onclick="closeModal('qrCodeModal')">&times;</button>
+        </div>
+        <div id="qrCodeContent">
+            <!-- QR code will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script src="~/js/visitor-access.js" asp-append-version="true"></script>
+<script>
+    lucide.createIcons();
+</script>
+

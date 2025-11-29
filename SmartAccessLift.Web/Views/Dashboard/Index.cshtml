@@ -1,0 +1,72 @@
+@model SmartAccessLift.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+    <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Welcome, @Model.UserName!</h1>
+
+    <div class="dashboard-grid">
+        <!-- Live Camera Feed Widget -->
+        <div class="dashboard-widget" style="grid-column: span 2;">
+            <h2 class="widget-title">Live Elevator Camera</h2>
+            <div class="camera-feed-container">
+                <video class="camera-feed" id="cameraFeed" autoplay muted>
+                    <source src="@Model.CameraFeedUrl" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <!-- Quick Actions Widget -->
+        <div class="dashboard-widget">
+            <h2 class="widget-title">Quick Actions</h2>
+            <div class="quick-actions">
+                <a asp-controller="VisitorAccess" asp-action="Index" class="quick-action-btn">
+                    <i data-lucide="user-plus" class="icon"></i>
+                    <span>Grant Visitor Access</span>
+                </a>
+                <a asp-controller="AccessLog" asp-action="Index" class="quick-action-btn">
+                    <i data-lucide="file-text" class="icon"></i>
+                    <span>See Access Logs</span>
+                </a>
+                <a asp-controller="FloorPermission" asp-action="Index" class="quick-action-btn">
+                    <i data-lucide="settings" class="icon"></i>
+                    <span>Manage My Floors</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Visitors Widget -->
+    <div class="dashboard-widget">
+        <h2 class="widget-title">Upcoming Visitors</h2>
+        @if (Model.UpcomingVisitors.Any())
+        {
+            <ul class="visitors-list">
+                @foreach (var visitor in Model.UpcomingVisitors)
+                {
+                    <li class="visitor-item">
+                        <div class="visitor-info">
+                            <div class="visitor-name">@visitor.VisitorName</div>
+                            <div class="visitor-time">
+                                @visitor.StartTime.ToString("MMM dd, HH:mm") - @visitor.EndTime.ToString("HH:mm")
+                            </div>
+                        </div>
+                        <span class="status-chip status-@visitor.Status.ToLower()">@visitor.Status</span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p style="color: var(--text-light); text-align: center; padding: 2rem;">No upcoming visitors</p>
+        }
+    </div>
+</div>
+
+<script src="~/js/dashboard.js" asp-append-version="true"></script>
+<script>
+    lucide.createIcons();
+</script>
+

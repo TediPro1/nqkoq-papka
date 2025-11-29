@@ -1,0 +1,22 @@
+@model SmartAccessLift.Web.Models.ViewModels.QRCodeViewModel
+
+<div class="qr-code-container">
+    <h3 style="margin-bottom: 1rem; color: var(--text-dark);">@Model.VisitorName</h3>
+    <img src="@Model.QRCodeImageUrl" alt="QR Code" class="qr-code-image" />
+    <p style="margin: 1rem 0; color: var(--text-light);">Expires: @Model.ExpiresAt.ToString("MMM dd, yyyy HH:mm")</p>
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+        <button onclick="copyLink('@Model.ShareableLink')" class="btn btn-primary">
+            <i data-lucide="copy" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i>
+            Copy Link
+        </button>
+        <button onclick="shareLink('@Model.ShareableLink')" class="btn btn-success">
+            <i data-lucide="share-2" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i>
+            Share
+        </button>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+

@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartAccess Lift</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">
+                    <img src="~/images/logo.svg" alt="SmartAccess Lift" class="logo" />
+                    <span>SmartAccess Lift</span>
+                </a>
+                <div class="nav-links">
+                    <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                    <a class="nav-link" asp-controller="VisitorAccess" asp-action="Index">Visitor Access</a>
+                    <a class="nav-link" asp-controller="FloorPermission" asp-action="Index">Floor Permissions</a>
+                    <a class="nav-link" asp-controller="LiveView" asp-action="Index">Live View</a>
+                    <a class="nav-link" asp-controller="AccessLog" asp-action="Index">Access Logs</a>
+                    <a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="main-container">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            &copy; 2025 - SmartAccess Lift
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/signalr.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

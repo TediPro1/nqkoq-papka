@@ -1,0 +1,45 @@
+@model SmartAccessLift.Web.Models.ViewModels.FloorPermissionViewModel
+@{
+    ViewData["Title"] = "Floor Permissions";
+}
+
+<div class="main-container">
+    <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Manage Floor Permissions</h1>
+
+    <div class="card">
+        <ul class="floor-list">
+            @foreach (var floor in Model.Floors)
+            {
+                <li class="floor-item" data-floor-id="@floor.FloorId">
+                    <div class="floor-info">
+                        <span class="floor-indicator @(floor.IsAllowed ? "allowed" : "restricted")"></span>
+                        <div>
+                            <div style="font-weight: 600;">Floor @floor.FloorNumber @(floor.FloorName != null ? $"({floor.FloorName})" : "")</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" 
+                               data-floor-id="@floor.FloorId" 
+                               @(floor.IsAllowed ? "checked" : "") 
+                               @(!floor.CanModify ? "disabled" : "") />
+                        <span class="toggle-slider"></span>
+                    </label>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+<!-- Floating Bottom Bar -->
+<div class="floating-bottom-bar">
+    <button id="savePermissionsBtn" class="btn btn-primary">
+        <i data-lucide="save" style="width: 20px; height: 20px; margin-right: 0.5rem;"></i>
+        Save Changes
+    </button>
+</div>
+
+<script src="~/js/floor-permission.js" asp-append-version="true"></script>
+<script>
+    lucide.createIcons();
+</script>
+

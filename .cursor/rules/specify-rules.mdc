@@ -1,0 +1,30 @@
+﻿# nqkoq papka Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-11-29
+
+## Active Technologies
+
+- C# (.NET 8.0 or later) + ASP.NET Core MVC, Entity Framework Core, SignalR (for real-time updates), QR code generation library (e.g., QRCoder), authentication middleware (ASP.NET Core Identity or custom) (1-ui-ux-design)
+
+## Project Structure
+
+```text
+backend/
+frontend/
+tests/
+```
+
+## Commands
+
+# Add commands for C# (.NET 8.0 or later)
+
+## Code Style
+
+C# (.NET 8.0 or later): Follow standard conventions
+
+## Recent Changes
+
+- 1-ui-ux-design: Added C# (.NET 8.0 or later) + ASP.NET Core MVC, Entity Framework Core, SignalR (for real-time updates), QR code generation library (e.g., QRCoder), authentication middleware (ASP.NET Core Identity or custom)
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

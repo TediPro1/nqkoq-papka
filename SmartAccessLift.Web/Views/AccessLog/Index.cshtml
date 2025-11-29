@@ -1,0 +1,76 @@
+@model SmartAccessLift.Web.Models.ViewModels.AccessLogViewModel
+@{
+    ViewData["Title"] = "Access Logs";
+}
+
+<div class="main-container">
+    <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Access Logs</h1>
+
+    <!-- Filters -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 class="widget-title">Filters</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="form-group">
+                <label>Floor</label>
+                <select id="floorFilter" class="form-control">
+                    <option value="">All Floors</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Access Method</label>
+                <select id="methodFilter" class="form-control">
+                    <option value="">All Methods</option>
+                    <option value="NFC">NFC</option>
+                    <option value="Fingerprint">Fingerprint</option>
+                    <option value="QR">QR</option>
+                    <option value="AdminOverride">Admin Override</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Outcome</label>
+                <select id="outcomeFilter" class="form-control">
+                    <option value="">All</option>
+                    <option value="Successful">Successful</option>
+                    <option value="Denied">Denied</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="startDateFilter" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="endDateFilter" class="form-control" />
+            </div>
+        </div>
+        <button onclick="applyFilters()" class="btn btn-primary" style="margin-top: 1rem;">Apply Filters</button>
+    </div>
+
+    <!-- Access Logs Table -->
+    <div class="card">
+        <table class="access-log-table">
+            <thead>
+                <tr>
+                    <th>User/Visitor</th>
+                    <th>Floor</th>
+                    <th>Method</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody">
+                <!-- Logs will be loaded here -->
+            </tbody>
+        </table>
+        <div id="pagination" style="margin-top: 1rem; text-align: center;">
+            <!-- Pagination will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script src="~/js/access-log.js" asp-append-version="true"></script>
+<script>
+    lucide.createIcons();
+    loadAccessLogs();
+</script>
+

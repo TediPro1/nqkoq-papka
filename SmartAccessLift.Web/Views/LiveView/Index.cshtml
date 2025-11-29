@@ -1,0 +1,54 @@
+@model SmartAccessLift.Web.Models.ViewModels.LiveViewViewModel
+@{
+    ViewData["Title"] = "Live Elevator View";
+}
+
+<div class="main-container">
+    <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Live Elevator View</h1>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <!-- Video Feed -->
+        <div style="background: #374151; border-radius: var(--border-radius); padding: 2rem; position: relative;">
+            <div class="camera-feed-container" style="position: relative; width: 100%; padding-top: 56.25%;">
+                <video class="camera-feed" id="cameraFeed" autoplay muted style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                    <source src="@Model.CameraFeedUrl" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <!-- Who's Inside Now Panel -->
+        <div class="card">
+            <h2 class="widget-title">Who's Inside Now</h2>
+            <div id="occupantsList">
+                @if (Model.CurrentOccupants.Any())
+                {
+                    @foreach (var occupant in Model.CurrentOccupants)
+                    {
+                        <div class="occupant-item" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid #E5E7EB;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                @(occupant.UserName?.Substring(0, 1).ToUpper() ?? occupant.VisitorName?.Substring(0, 1).ToUpper() ?? "?")
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600;">@(occupant.UserName ?? occupant.VisitorName ?? "Unknown")</div>
+                                <div style="font-size: 0.875rem; color: var(--text-light);">
+                                    @occupant.EntryTime.ToString("HH:mm:ss") • @occupant.AccessMethod
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p style="color: var(--text-light); text-align: center; padding: 2rem;">No one in elevator</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/live-view.js" asp-append-version="true"></script>
+<script>
+    lucide.createIcons();
+</script>
+

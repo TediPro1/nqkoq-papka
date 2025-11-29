@@ -4,8 +4,28 @@ let currentPage = 1;
 const pageSize = 50;
 
 document.addEventListener('DOMContentLoaded', function() {
+    loadFloors();
     loadAccessLogs();
 });
+
+async function loadFloors() {
+    try {
+        const response = await fetch('/AccessLog/Floors');
+        const floors = await response.json();
+        
+        const floorFilter = document.getElementById('floorFilter');
+        if (floorFilter) {
+            floors.forEach(floor => {
+                const option = document.createElement('option');
+                option.value = floor.id;
+                option.textContent = `Floor ${floor.number}${floor.name ? ` (${floor.name})` : ''}`;
+                floorFilter.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading floors:', error);
+    }
+}
 
 function applyFilters() {
     currentPage = 1;

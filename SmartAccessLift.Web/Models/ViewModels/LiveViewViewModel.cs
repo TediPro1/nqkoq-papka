@@ -4,6 +4,8 @@ public class LiveViewViewModel
 {
     public string CameraFeedUrl { get; set; } = string.Empty;
     public List<OccupantViewModel> CurrentOccupants { get; set; } = new List<OccupantViewModel>();
+    public int? CurrentFloor { get; set; }
+    public string DoorStatus { get; set; } = "Closed"; // "Open" or "Closed"
 }
 
 public class OccupantViewModel

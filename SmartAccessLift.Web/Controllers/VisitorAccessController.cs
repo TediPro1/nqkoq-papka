@@ -101,13 +101,18 @@ public class VisitorAccessController : Controller
             var qrCodeImageBase64 = _qrCodeService.GenerateQRCodeImage(qrCodeData);
             var fullQrCodeImageUrl = $"data:image/png;base64,{qrCodeImageBase64}";
 
+            // Generate a random access code (6 digits)
+            var random = new Random();
+            var accessCode = random.Next(100000, 999999).ToString();
+
             return Json(new
             {
                 success = true,
                 visitorAccessId = visitorAccess.Id,
                 qrCodeUrl = Url.Action("QRCode", new { id = visitorAccess.Id }),
                 qrCodeImage = fullQrCodeImageUrl,
-                shareableLink = shareableLink
+                shareableLink = shareableLink,
+                accessCode = accessCode
             });
         }
         catch (Exception ex)

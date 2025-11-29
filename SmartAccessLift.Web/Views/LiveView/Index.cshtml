@@ -3,46 +3,67 @@
     ViewData["Title"] = "Live Elevator View";
 }
 
-<div class="main-container">
-    <h1 style="margin-bottom: 2rem; color: var(--text-dark);">Live Elevator View</h1>
+<div class="main-container" style="background: #1F2937; min-height: 100vh; padding: 2rem;">
+    <h1 style="margin-bottom: 2rem; color: white;">Live Elevator View</h1>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-        <!-- Video Feed -->
-        <div style="background: #374151; border-radius: var(--border-radius); padding: 2rem; position: relative;">
-            <div class="camera-feed-container" style="position: relative; width: 100%; padding-top: 56.25%;">
-                <video class="camera-feed" id="cameraFeed" autoplay muted style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                    <source src="@Model.CameraFeedUrl" type="video/mp4">
+    <!-- Top Section: Video Feed and Status -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <!-- Left: Large Video Feed Area -->
+        <div style="background: #000000; border-radius: 16px; padding: 2rem; position: relative; min-height: 400px; display: flex; align-items: center; justify-content: center;">
+            <div class="camera-feed-container" style="position: relative; width: 100%; padding-top: 56.25%; border-radius: 12px; overflow: hidden;">
+                <video class="camera-feed" id="cameraFeed" autoplay muted loop playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; background: #000;">
+                    <source src="/images/elevator_camera.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
         </div>
 
-        <!-- Who's Inside Now Panel -->
-        <div class="card">
-            <h2 class="widget-title">Who's Inside Now</h2>
-            <div id="occupantsList">
-                @if (Model.CurrentOccupants.Any())
+        <!-- Right: Floor Number and Door Status -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Floor Number Display -->
+            <div style="background: white; border-radius: 16px; padding: 2rem; text-align: center;">
+                <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Floor number</div>
+                <div id="currentFloor" style="font-size: 3rem; font-weight: 700; color: #1F2937;">-</div>
+            </div>
+
+            <!-- Elevator Doors Status -->
+            <div style="background: #000000; border-radius: 16px; padding: 2rem; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="font-size: 0.875rem; color: #9CA3AF; margin-bottom: 1rem; text-align: center;">Picture of elevator doors</div>
+                <div id="doorStatus" style="font-size: 1.5rem; font-weight: 600; color: white; text-transform: uppercase; margin-bottom: 1rem;">
+                    <span id="doorState">Open</span>
+                </div>
+                <div id="doorVisual" style="width: 100%; max-width: 250px; height: 150px; margin-top: 1rem; display: flex; align-items: center; justify-content: center; background: transparent;">
+                    <img id="doorImage" src="/images/elevator_dors_open.png" alt="Elevator Doors" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Who is inside now -->
+    <div style="background: #374151; border-radius: 16px; padding: 2rem;">
+        <h2 style="color: white; margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 600;">Who is inside now</h2>
+        <div id="occupantsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+            @if (Model.CurrentOccupants.Any())
+            {
+                @foreach (var occupant in Model.CurrentOccupants)
                 {
-                    @foreach (var occupant in Model.CurrentOccupants)
-                    {
-                        <div class="occupant-item" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid #E5E7EB;">
-                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
-                                @(occupant.UserName?.Substring(0, 1).ToUpper() ?? occupant.VisitorName?.Substring(0, 1).ToUpper() ?? "?")
-                            </div>
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600;">@(occupant.UserName ?? occupant.VisitorName ?? "Unknown")</div>
-                                <div style="font-size: 0.875rem; color: var(--text-light);">
-                                    @occupant.EntryTime.ToString("HH:mm:ss") • @occupant.AccessMethod
-                                </div>
+                    <div class="occupant-item" style="background: #1F2937; border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #4B5563; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.25rem;">
+                            @(occupant.UserName?.Substring(0, 1).ToUpper() ?? occupant.VisitorName?.Substring(0, 1).ToUpper() ?? "?")
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">@(occupant.UserName ?? occupant.VisitorName ?? "Unknown")</div>
+                            <div style="font-size: 0.875rem; color: #9CA3AF;">
+                                @occupant.EntryTime.ToString("HH:mm:ss") • @occupant.AccessMethod
                             </div>
                         </div>
-                    }
+                    </div>
                 }
-                else
-                {
-                    <p style="color: var(--text-light); text-align: center; padding: 2rem;">No one in elevator</p>
-                }
-            </div>
+            }
+            else
+            {
+                <p style="color: #9CA3AF; text-align: center; padding: 2rem; grid-column: 1 / -1;">No one in elevator</p>
+            }
         </div>
     </div>
 </div>

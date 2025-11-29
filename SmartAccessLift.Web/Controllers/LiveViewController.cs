@@ -20,8 +20,18 @@ public class LiveViewController : Controller
         var viewModel = new LiveViewViewModel
         {
             CameraFeedUrl = _cameraService.GetCameraFeedUrl(),
-            CurrentOccupants = new List<OccupantViewModel>()
-            // TODO: Load actual occupants from real-time data
+            CurrentOccupants = new List<OccupantViewModel>
+            {
+                new OccupantViewModel
+                {
+                    VisitorName = "Леля Гинка",
+                    EntryTime = DateTime.UtcNow.AddMinutes(-5),
+                    CurrentFloor = 3,
+                    AccessMethod = "QR"
+                }
+            },
+            CurrentFloor = null, // TODO: Get from real-time data
+            DoorStatus = "Closed" // TODO: Get from real-time data
         };
 
         return View(viewModel);
@@ -33,7 +43,13 @@ public class LiveViewController : Controller
         // TODO: Get actual occupants from real-time tracking
         var occupants = new List<OccupantViewModel>
         {
-            // Placeholder data
+            new OccupantViewModel
+            {
+                VisitorName = "Леля Гинка",
+                EntryTime = DateTime.UtcNow.AddMinutes(-5),
+                CurrentFloor = 3,
+                AccessMethod = "QR"
+            }
         };
 
         return Json(new

@@ -89,11 +89,22 @@ async function handleFormSubmit(e) {
             // Escape the image URL for use in HTML
             const escapedImageUrl = qrCodeImageUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             
+            // Generate random access code if not provided
+            const accessCode = result.accessCode || generateRandomCode();
+            
             qrCodeContent.innerHTML = `
                 <div style="text-align: center; padding: 1rem;">
                     <img id="qrCodeImage" src="${escapedImageUrl}" alt="QR Code" 
                          onerror="console.error('Failed to load QR code image'); this.src='/images/download.png';" 
                          style="max-width: 300px; height: auto; margin: 0 auto 1rem; display: block; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; background: white;">
+                    <div style="margin: 1.5rem 0; padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Access Code</div>
+                        <div id="accessCode" style="font-size: 2rem; font-weight: 700; color: var(--text-dark); letter-spacing: 0.2em; font-family: monospace;">${accessCode}</div>
+                        <button onclick="copyAccessCode('${accessCode}')" class="btn btn-secondary" style="margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem;">
+                            <i data-lucide="copy" style="width: 14px; height: 14px; margin-right: 0.25rem;"></i>
+                            Copy Code
+                        </button>
+                    </div>
                     <div class="qr-actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
                         <button onclick="downloadQRCode('${escapedImageUrl}')" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
                             <i data-lucide="download" style="width: 16px; height: 16px;"></i>
@@ -139,6 +150,19 @@ function shareLink(link) {
     } else {
         copyLink(link);
     }
+}
+
+function generateRandomCode() {
+    // Generate a 6-digit random code
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function copyAccessCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        showToast('Access code copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+    });
 }
 
 async function downloadQRCode(imageUrl) {

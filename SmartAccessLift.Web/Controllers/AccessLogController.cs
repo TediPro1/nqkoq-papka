@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SmartAccessLift.Web.Attributes;
+using SmartAccessLift.Web.Data;
 using SmartAccessLift.Web.Helpers;
 using SmartAccessLift.Web.Models.ViewModels;
 using SmartAccessLift.Web.Services;
@@ -10,10 +12,12 @@ namespace SmartAccessLift.Web.Controllers;
 public class AccessLogController : Controller
 {
     private readonly IAccessLogService _accessLogService;
+    private readonly ApplicationDbContext _context;
 
-    public AccessLogController(IAccessLogService accessLogService)
+    public AccessLogController(IAccessLogService accessLogService, ApplicationDbContext context)
     {
         _accessLogService = accessLogService;
+        _context = context;
     }
 
     public IActionResult Index()
@@ -59,7 +63,7 @@ public class AccessLogController : Controller
         var logViewModels = logs.Select(log => new AccessLogEntryViewModel
         {
             Id = log.Id,
-            UserName = log.User?.Email,
+            UserName = log.User != null ? $"{log.User.FirstName} {log.User.LastName}" : null,
             VisitorName = log.VisitorAccess?.VisitorName,
             FloorNumber = log.Floor.FloorNumber,
             AccessMethod = log.AccessMethod,
@@ -76,6 +80,18 @@ public class AccessLogController : Controller
             pageSize = pageSize,
             totalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Floors()
+    {
+        var floors = await _context.Floors
+            .Where(f => f.IsActive)
+            .OrderBy(f => f.FloorNumber)
+            .Select(f => new { id = f.Id, number = f.FloorNumber, name = f.Name })
+            .ToListAsync();
+
+        return Json(floors);
     }
 }
 

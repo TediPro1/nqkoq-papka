@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize floor and door status
     // Doors start as Open, will be updated by video time or SignalR
-    updateFloorNumber(null);
+    updateFloorNumber(1);
     updateDoorStatus('Open');
 });
 
@@ -67,6 +67,16 @@ async function loadOccupants() {
     }
 }
 
+function formatEntryTime(dateTimeString) {
+    const date = new Date(dateTimeString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}/${month}/${day}:${hours}:${minutes}`;
+}
+
 function updateOccupantsList(occupants) {
     const container = document.getElementById('occupantsList');
     if (!container) return;
@@ -84,7 +94,7 @@ function updateOccupantsList(occupants) {
             <div style="flex: 1;">
                 <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">${occupant.userName || occupant.visitorName || 'Unknown'}</div>
                 <div style="font-size: 0.875rem; color: #9CA3AF;">
-                    ${new Date(occupant.entryTime).toLocaleTimeString()} • ${occupant.accessMethod}
+                    ${formatEntryTime(occupant.entryTime)} • ${occupant.accessMethod}
                 </div>
             </div>
         </div>

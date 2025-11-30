@@ -25,12 +25,12 @@ public class LiveViewController : Controller
                 new OccupantViewModel
                 {
                     VisitorName = "Леля Гинка",
-                    EntryTime = DateTime.UtcNow.AddMinutes(-5),
+                    EntryTime = new DateTime(2023, 3, 15, 16, 36, 0),
                     CurrentFloor = 3,
                     AccessMethod = "QR"
                 }
             },
-            CurrentFloor = null, // TODO: Get from real-time data
+            CurrentFloor = 1, // TODO: Get from real-time data
             DoorStatus = "Closed" // TODO: Get from real-time data
         };
 
@@ -46,7 +46,7 @@ public class LiveViewController : Controller
             new OccupantViewModel
             {
                 VisitorName = "Леля Гинка",
-                EntryTime = DateTime.UtcNow.AddMinutes(-5),
+                EntryTime = new DateTime(2023, 3, 15, 16, 36, 0),
                 CurrentFloor = 3,
                 AccessMethod = "QR"
             }

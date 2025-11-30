@@ -54,7 +54,7 @@
                         <div style="flex: 1;">
                             <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">@(occupant.UserName ?? occupant.VisitorName ?? "Unknown")</div>
                             <div style="font-size: 0.875rem; color: #9CA3AF;">
-                                @occupant.EntryTime.ToString("HH:mm:ss") • @occupant.AccessMethod
+                                @occupant.EntryTime.ToString("yyyy/MM/dd:HH:mm") • @occupant.AccessMethod
                             </div>
                         </div>
                     </div>

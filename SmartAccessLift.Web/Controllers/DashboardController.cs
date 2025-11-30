@@ -49,7 +49,8 @@ public class DashboardController : Controller
             CameraFeedUrl = _cameraService.GetCameraFeedUrl(),
             UpcomingVisitors = upcomingVisitors,
             ActiveVisitorCount = upcomingVisitors.Count(v => v.Status == "Active"),
-            PendingVisitorCount = upcomingVisitors.Count(v => v.Status == "Pending")
+            PendingVisitorCount = upcomingVisitors.Count(v => v.Status == "Pending"),
+            CurrentFloor = 1
         };
 
         return View(viewModel);

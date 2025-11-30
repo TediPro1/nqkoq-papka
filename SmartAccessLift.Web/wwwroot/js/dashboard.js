@@ -51,7 +51,7 @@ function initializeCameraFeed() {
 
 function initializeElevatorStatus() {
     // Initialize floor and door status
-    updateDashboardFloorNumber(null);
+    updateDashboardFloorNumber(1);
     updateDashboardDoorStatus('Open');
 }
 

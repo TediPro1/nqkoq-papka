@@ -9,6 +9,7 @@ public class DashboardViewModel
     public List<UpcomingVisitorViewModel> UpcomingVisitors { get; set; } = new List<UpcomingVisitorViewModel>();
     public int ActiveVisitorCount { get; set; }
     public int PendingVisitorCount { get; set; }
+    public int? CurrentFloor { get; set; }
 }
 
 public class UpcomingVisitorViewModel
